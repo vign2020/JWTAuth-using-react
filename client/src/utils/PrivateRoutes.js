@@ -8,12 +8,14 @@ import { useCookies } from 'react-cookie';
 export default function PrivateRoutes() {
     let auth=false;
     const [cookies] = useCookies(['AuthToken']);
+    // const [ cookies ] = useCookies(['zxc'])
+    
     // alert(cookies.AuthToken)
     if(cookies.AuthToken) auth = true;
+    
 
 
     return(
-
        auth ? <Outlet/> : <Navigate to="/login"/>
     )
 }

@@ -26,7 +26,9 @@ export default function Login() {
           if (response.status === 200) {
   
             history("/home" , {state:{id:email}})
-            setCookie('AuthToken', response.data.token)
+            setCookie('AuthToken', response.data.token , {maxAge : 60 * 60 })
+            setCookie('CurrentUser' , response.data.CurrentUser , {maxAge : 60 * 60})
+
             console.log(response.data)
             // alert('logged in ')
     
@@ -45,14 +47,14 @@ export default function Login() {
       };
     
   return (
-    <div class="container" >
-    <form class="login-form" action='POST'>
+    <div className="container" >
+    <form className="login-form" action='POST'>
       <h2>Login</h2>
-      <div class="form-group">
+      <div className="form-group">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" onChange={(e)=>setEmail(e.target.value)} placeholder="Enter your email"/>
       </div>
-      <div class="form-group">
+      <div className="form-group">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" onChange={(e)=>setPassword(e.target.value)} placeholder="Enter your password"/>
       </div>
