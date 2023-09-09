@@ -24,6 +24,7 @@ const userPseudoSchema = new mongoose.Schema({
   password: String,
   premium:Boolean,
   date_joined:Date,
+  image:String,
   stats:[
     {
         solved:Number,

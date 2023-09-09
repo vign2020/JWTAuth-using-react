@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Template Areas</title>
+  <style>
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 100px 100px 100px;
+      grid-template-areas:
+        "header sidebar sidebar "
+        "header . . "
+        "main . . ";
+      gap: 10px; /* Optional: Add gap between grid items */
+    }
+
+    .header {
+      grid-area: header;
+      background-color: #3498db;
+      color: #fff;
+    }
+
+    .sidebar {
+      grid-area: sidebar;
+      background-color: #e74c3c;
+      color: #fff;
+    }
+
+    .main {
+      grid-area: main;
+      background-color: #2ecc71;
+      color: #fff;
+    }
+
+    /* Optional: Style for grid items */
+    .grid-item {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-container">
+    <div class="grid-item header">Header</div>
+    <div class="grid-item sidebar">Sidebar</div>
+    <div class="grid-item main">Main Content</div>
+  </div>
+</body>
+</html>

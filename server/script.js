@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require("cors")
 const Cookies = require('js-cookie')
 const jwt=require("jsonwebtoken")
+const multer = require('multer')
 
 //************************CODE EDITOR LIBRARIES***************
 const { exec } = require('child_process');
@@ -46,6 +47,17 @@ app.use(bodyParser.json());
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '../client/src/uploads')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
 
 const verifyTokenFromCookie = (req, res, next) => {
   const token = req.cookies.token;
@@ -345,6 +357,58 @@ app.post('/discuss-content' , async(req, res)=>{
   res.json({userContent : content})
 
 })
+
+
+//profile route
+const upload = multer({ storage });
+
+
+app.get('/profile', async (req,res)=>{
+  const curr_user = req.query.curr_user;
+
+  try{
+    const user= await User.findOne({name : curr_user})
+    console.log(' user stats is ' + user.stats)
+    const contest = user.stats[0].contests;
+    const ranking = user.stats[0].Ranking;
+    const solved = user.stats[0].solved;
+    console.log('contest is '+ contest)
+
+    if(!user.image) res.json({image : 'noimage'});
+    else{
+      //fetch the image-name from db
+      res.json({image : user.image , contest : contest , ranking : ranking , solved : solved})
+    }
+  }catch(e){
+    console.log(e);
+  }
+  
+  
+  
+})
+// Define a route to handle file uploads
+app.post('/profile', upload.single('file'), async (req, res) => {
+  // The file has been uploaded and stored in the 'uploads/' directory
+  // You can perform further processing here
+  const curr_user = req.query.curr_user
+  const file_name =req.file.originalname;
+  try{
+    const user = await User.findOne({name : curr_user})
+
+    if(!user.image){
+      user.image = file_name;
+    }
+    user.image=file_name
+    await user.save();
+    res.json({ message: 'File uploaded successfully' , image : file_name});
+
+  }catch(e){
+    console.log(e)
+  }
+ 
+
+
+});
 
   app.listen(5000, () => {
     console.log('Server started on port 5000');

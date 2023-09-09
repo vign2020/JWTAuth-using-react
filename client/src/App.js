@@ -13,10 +13,10 @@ import Problem from './components/Problem'
 import CodeEditor from './components/CodeEditor';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar  from './components/Navbar';
-import Func from './components/Func'
-import Discuss from './components/Discuss';
+import Func from './components/Func';
 import DiscussContent from './components/DiscussContent'; 
-
+import Profile from './components/Profile'
+import Disucss from './components/Discuss'
 export default function App() {
 
   const location = useLocation();
@@ -40,9 +40,9 @@ export default function App() {
                 <Route path="/tags" element={<Tag tag={tag} problem_name={problem_name}/>}/>
                 <Route path="/problem_name" element={<ProblemName problem_name={problem_name}/>}/>
                 <Route path="/code" element={<CodeEditor />} />
-                <Route path="/discuss" element={<Discuss discuss={discuss}/>} />
+                <Route path="/discuss" element={<Disucss discuss={discuss}/>} />
                 <Route path="/discuss-content" element={<DiscussContent discuss={discuss} />} />
-                
+                <Route path = "/profile" element={<Profile /> }/>
             </Route>
             <Route path = "/" element={<Landing />} exact/>
             <Route element={<Register/>} path="/register" />
