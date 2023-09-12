@@ -63,7 +63,7 @@ const problem_tags=[
     {
         tag:"Array",
         name:"Two Sum",
-        problem_desc:"Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aspernatur nesciunt, ipsum laboriosam nostrum perspiciatis fugit a veritatis aut dignissimos libero deserunt illo adipisci placeat! Earum asperiores velit fuga suscipit ipsum, nulla itaque. veritatis aut dignissimos libero deserunt illo adipisci placeat! Earum asperiores velit fuga suscipit ipsum, nulla",
+        problem_desc:"Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.You may assume that each input would have exactly one solution, and you may not use the same element twice.You can return the answer in any order",
         diff:"easy",
         acceptance:33.3,
         list:["Favourites","Weekly"],

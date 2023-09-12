@@ -16,7 +16,7 @@ export default function Logout() {
     
   return (
     <div>
-    <button onClick={handleDeleteToken}>Delete Token</button>
+    <button onClick={handleDeleteToken}>Logout</button>
 
     </div>
   )

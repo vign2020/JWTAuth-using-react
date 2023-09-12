@@ -332,7 +332,7 @@ app.post('/register', async (req, res) => {
         user.posts.push(newPost);
         await user.save();
 
-        res.json({ status: 201 , timestamp:timestamp});
+        res.json({ status: 201 , timestamp:newPost.timestamp});
 
     
         }catch(e){
@@ -365,6 +365,7 @@ const upload = multer({ storage });
 
 app.get('/profile', async (req,res)=>{
   const curr_user = req.query.curr_user;
+  console.log('user is'+curr_user)
 
   try{
     const user= await User.findOne({name : curr_user})
@@ -374,7 +375,7 @@ app.get('/profile', async (req,res)=>{
     const solved = user.stats[0].solved;
     console.log('contest is '+ contest)
 
-    if(!user.image) res.json({image : 'noimage'});
+    if(!user.image) res.json({image : 'noimage.png'});
     else{
       //fetch the image-name from db
       res.json({image : user.image , contest : contest , ranking : ranking , solved : solved})

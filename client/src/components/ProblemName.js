@@ -3,6 +3,10 @@ import data from '../data/data';
 import { useState } from 'react';
 import axios from 'axios'
 
+
+import Editor from "@monaco-editor/react";
+
+
 export default function ProblemName(props) {
     const problem_tags=data[1];
 
@@ -16,6 +20,7 @@ export default function ProblemName(props) {
     const handleSubmit=async (e)=>{
         e.preventDefault();
         setGo(true)
+        setsuccess(undefined)
         console.log('success'+ success)
     
         try{
@@ -48,7 +53,7 @@ export default function ProblemName(props) {
       <div className="CodeEditor-container">
         <h1>Code Editor</h1>
         <form action="POST" className="form-container">
-          <textarea
+          {/* <textarea
             rows="20"
             cols="75"
             value={code}
@@ -56,7 +61,15 @@ export default function ProblemName(props) {
             onChange={(e) => {
               setCode(e.target.value);
             }}
-          ></textarea><br />
+          ></textarea><br /> */}
+           <Editor
+      height="100px"
+      language="c++"
+      theme="vs-dark"
+      value={code}
+      onChange={(e)=>{setCode(e.target.value)}}
+    />
+
           <button
             type="submit"
             onClick={handleSubmit}
@@ -67,7 +80,7 @@ export default function ProblemName(props) {
         </form>
         <div className={`code-output-container ${Go ? "code-output-container-true" : "code-output-container-false"}`}>
           <h1 className={`code-header ${success ? 'code-header-success' : 'code-header-fail'}`}>
-            {success ? 'Success' : 'Fail'}
+            {success ? 'Success' : 'Processing....'}
           </h1>
           {executionTime && (
             <p className="execution-time">

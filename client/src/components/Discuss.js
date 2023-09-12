@@ -88,13 +88,14 @@ export default function Discuss() {
             return(
                 
         <div key={index} className={`post-${bgcol}`}>
-            <p><Link to={`/discuss-content?discuss=${item}`}>{item}</Link></p><br/>
-            <p>{userTimestamps[index]}</p>
+            
+            <p><Link to={`/discuss-content?discuss=${item}`}>{item}</Link></p>
+            <p className='timestamp'>CREATED AT: &nbsp;{userTimestamps[index]}</p>
 
-            <div className="buttons-container-discussion">
+            {/* <div className="buttons-container-discussion">
                     <button className="upvote-button">Upvote</button>
                     <button className="view-button">View</button>
-                </div>
+                </div> */}
 
           </div>
                 

@@ -57,13 +57,13 @@ export default function CodeEditor() {
             </form>
         
             <div class="code-output-container">
-              <h1 class={`code-header ${success ? 'code-header-success' : 'code-header-fail'}`}>
-              {success ? 'Success' : 'Fail'}
-              </h1>
+              {/* <h1 class={`code-header ${success ? 'code-header-success' : 'code-header-fail'}`}>
+              {success ? 'Succdfdfdfess' : 'Loading' }
+              </h1> */}
               
               {executionTime && (
                 <p class="execution-time">
-                  Execution Time: {executionTime} ms
+                  {/* Execution Time: {executionTime} ms */}
                 </p>
               )}
         

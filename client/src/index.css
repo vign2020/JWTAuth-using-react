@@ -7,7 +7,8 @@ body {
 nav {
   background-color: #f2f2f2;
   padding:20px 20px;
-  
+  display: flex;
+  justify-content:space-between
   /* border:2px solid red; */
 }
 
@@ -231,9 +232,9 @@ button:hover {
 
 .container {
   max-width: 500px;
-  background-color: #fff;
+  background-color: #f7f6f6de;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   /* border: 1px solid #ccc; */
   display: flex;
@@ -254,8 +255,9 @@ button:hover {
 }
 
 .form-group {
-  width: 100%;
+  width: 90%;
   margin-bottom: 15px;
+  
 }
 
 .form-group label {
@@ -267,13 +269,14 @@ button:hover {
 .form-group input {
   width: 80%;
   padding: 15px;
-  border: 3px solid red;
+  /* border: 3px solid red; */
   border-radius: 4px;
   outline: none;
+  border:1px solid rgb(205, 205, 205)
 }
 
 button {
-  background-color: #4CAF50;
+  background-color: #ce7d04;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -283,7 +286,7 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #a46300;
 }
 .code-container {
   font-family: Arial, sans-serif;
@@ -425,11 +428,13 @@ button:hover {
 
 /* Style the button */
 .toggle {
-  background-color: #007bff;
+  background-color: rgb(228, 148, 0);
   color: #fff;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
+  position: relative;
+  margin-left:20px;
 }
 
 /* Style the button when active */
@@ -464,7 +469,7 @@ textarea {
 
 button[type="submit"],
 .close {
-  background-color: #007bff;
+  background-color: #ff9900;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -482,12 +487,17 @@ button[type="submit"],
   padding: 10px;
   margin-bottom: 10px;
   background-color: #f9f9f9;
+  font-size: 20px;
+}
+.timestamp{
+  font-size:15px;
 }
 .post-even{
   border: 1px solid #ccc;
   padding: 10px;
   margin-bottom: 10px;
   background-color: #ddd;
+  font-size:20px;
 }
 .buttons-container-discussion{
   display: flex;

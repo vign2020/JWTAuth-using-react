@@ -84,7 +84,7 @@ export default function Profile() {
     <div className="parent">
       <div className="parent-sub-1">
       <div className="profile-container-1">
-        {image === null ? '' :  <img src={require(`../uploads/${image}`)} height='170' width='170' id='profile-image-id' onClick={()=>{setImage_show('block')}}/> }
+        {image === null ? 'no-image' :  <img src={require(`../uploads/${image}`)} height='170' width='170' id='profile-image-id' onClick={()=>{setImage_show('block')}}/> }
           <input type="file" onChange={handleFileChange} style={{display : image_show}} />
           <button onClick={handleUpload} style={{display : image_show}}>Upload</button>
           <h4>{curr_user.toUpperCase()}</h4>

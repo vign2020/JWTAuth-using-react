@@ -27,7 +27,7 @@ export default function Problem() {
                     <div class="card">
                         <h2>{item.heading}</h2>
                         <p>{item.text}</p>
-                        <button>Click me</button>
+                        <button>Check it out!</button>
                     </div>
                     </>
                 )
