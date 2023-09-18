@@ -302,6 +302,9 @@ button:hover {
 .code-header-success {
   color: green;
 }
+.code-header-processing{
+  color:black;
+}
 
 .code-header-fail {
   color: red;
@@ -332,13 +335,22 @@ button:hover {
   grid-template-columns: 2fr 3fr; /* Divides the container into two columns, 1/4 and 3/4 width */
   gap: 20px; /* Adds some space between the two columns */
   /* border:3px solid brown; */
+  font-size:18px;
+}
+.example {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .ProblemDescription {
   /* padding: 30px; */
   border-right: 10px solid #ccc;
   /* border:2px solid yellow; */
-  height:90vh;
+  /* height:90vh; */
   /* max-width: 25% Set the maximum width to 25% */
 }
 
@@ -424,6 +436,23 @@ button:hover {
   text-align: center;
   margin: 20px;
   font-family: Arial, sans-serif;
+}
+.disucss-content-container{
+  border: 1px solid rgb(212, 210, 210);
+  box-shadow: 1px 1px 1px rgb(230, 230, 230);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width:80%;
+  left: 10%;
+  top:50px;
+}
+
+.myposts-container-oops{
+  font-size: 50px;
+  color: #565656;
 }
 
 /* Style the button */

@@ -4,6 +4,6 @@ const path = require('path');
 const directoryPath = __dirname;
 
 // Construct the full path to the "twosum" file
-const filePath = 
+const filePath = path.join(directoryPath, 'twosum');
 
 console.log(`Path of 'twosum': ${filePath}`);

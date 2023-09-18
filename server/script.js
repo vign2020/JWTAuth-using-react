@@ -118,7 +118,7 @@ app.get('/home' , verifyTokenFromCookie , checkExpire ,  async (req ,res)=>{
 
 
 app.post('/register', async (req, res) => {
-  let today = new Date().toLocaleDateString()
+  let today = new Date()
 
     const { name, email, password } = req.body;
      console.log(`the values are ${name} and ${email}  and ${password}`)
@@ -202,11 +202,11 @@ app.post('/register', async (req, res) => {
 
   //******************Code editor code Part**************************//
 
-  const create_file_dir = async (code)=>{
+  const create_file_dir = async (code , prob_name)=>{
     // CODE TO CREATE DIRECTORY 
   const directoryName = 'Code';
   const uniqueId = uuidv4();// Replace this with the actual method to generate a unique ID
-  const fileName = `file${uniqueId}.cpp`;
+  const fileName = `${prob_name}`;
  
       if (code === undefined) return res.status(400).json({ msg: 'No code' });
       if (!fs.existsSync(directoryName)) fs.mkdirSync(directoryName);
@@ -253,22 +253,46 @@ app.post('/register', async (req, res) => {
       return runPromise; // Return the output of execution
     };
 
+    const global_testcase=[];
+    let global_actual_code;
 
     app.post("/code", async (req, res) => {
-      const { code } = req.body;
+      const { code , call  , create} = req.body;
+      console.log('call is'+ call+ 'and create is' + create);
       try{
         //THE FILE PATH 
-        const filePath = await create_file_dir(code);
-        console.log(filePath)
+        // console.log('global actual code' + global_actual_code)
+        const filePath = await create_file_dir(code , create);
+
+        const directoryPath = __dirname;
+        const file_path_exec = path.join(directoryPath, `Code/${call}`);
+        // const filePathActualCode = await create_file_dir(global_actual_code);
+
+        console.log('filepath' + filePath)
+        // console.log('globalo8utou' + global_actual_code)
     
         //CODE TO EXECUTE THE FILE
         const start=Date.now()
-        const output = await execute_code(filePath)
-        const end = Date.now()
+        const output = await execute_code(file_path_exec)
 
-        console.log(`output is ${output}`)
-        res.json({op:output , executionTime: end-start , success:true});
-    
+        const end = Date.now()
+        // console.log('output is'+ output)
+       
+       var global_testcase_output = '';
+      //  console.log('fookin...undef'+ global_testcase)
+
+        global_testcase[0].output.map((item , index)=>{
+          global_testcase_output+=item;
+          global_testcase_output+=" ";
+        })
+        console.log('array op' + global_testcase_output)
+        console.log('code op'+output)
+        
+        var result;
+        global_testcase_output === output ? result = 'correct answer' : result = 'wrong answer'
+       
+        res.json({op:output , executionTime: end-start , input: global_testcase[0].array , expected :  global_testcase_output, result: result, success:true});
+
       }catch (error) {
         console.error('Error is is:', error);
         // console.log('ERROR IS THIS ' + error)
@@ -277,6 +301,22 @@ app.post('/register', async (req, res) => {
       }
         
       });
+
+
+      app.post("/code-testcase" , async(req ,res) =>{
+        const testcase = req.body.testcase;
+        const code = req.body.actualCode;
+
+        // console.log('actual code is' + code)
+        // console.log('test case' + testcase)
+
+        testcase.map((item ,index)=>{
+          global_testcase.push(item)
+        })
+        global_actual_code = code;
+        // console.log(code)
+        res.json({status : 200})
+      })
 
 //code for discuss route
 
@@ -325,7 +365,7 @@ app.post('/register', async (req, res) => {
 
           const newPost = {
             content: content,
-            title: title,
+            title : title,
             timestamp: new Date()
         };
 
@@ -345,7 +385,7 @@ app.post('/discuss-content' , async(req, res)=>{
   const postData = req.body.getContent;
   console.log(postData)
 
-  let posts='';
+  
    
   const user = await User.findOne({ 'posts.title': postData }, { 'posts.$': 1 }).exec();
    
@@ -358,7 +398,59 @@ app.post('/discuss-content' , async(req, res)=>{
 
 })
 
+app.post('/my-post' , async(req, res)=>{
+  const curr_user = req.body.curr_user;
+  try{
+    const myPost = await User.findOne({name : curr_user})
+    const postsArray = myPost.posts;
 
+
+    const Combined=[]
+    postsArray.map((item , index)=>{
+      
+      const temp = {title : item.title , content : item.content}
+      Combined.push(temp)
+    
+    })
+    res.json({Combined : Combined});
+
+  }catch(e){
+    console.log(e)
+    // res.json({posts: []})
+  }
+
+})
+
+app.post('/posts-delete', async(req , res)=>{
+
+  const title = req.body.title;
+  const curr_user = req.body.curr_user;
+
+    if(title!==null) {
+      try{
+        
+      // const user_title = await User.findOne({'posts.title' : title} , {'posts.$' : 1 }).exec();
+      // console.log(user_title.posts[0])
+
+    
+      const user = await User.findOne({name : curr_user})
+      const postIndex = user.posts.findIndex(post => post.title === title);
+
+      user.posts.splice(postIndex, 1);
+
+    // Save the updated user object
+    await user.save();
+    res.json({status : 200})
+      }
+      catch(e){
+        console.log(e)
+         res.json({status : 500})
+      }
+    }
+
+  
+  // console.log(title)
+})
 //profile route
 const upload = multer({ storage });
 

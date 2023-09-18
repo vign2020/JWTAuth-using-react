@@ -22,9 +22,9 @@ export default function DiscussContent(props) {
 
     console.log(`content is ${content}`)
   return (
-    <div>
+    <div className='disucss-content-container'>
         <h1>{props.discuss}</h1>
-        <div className='discuss-content-container'>
+        <div className='discuss-content-container-child'>
             { content }
         </div>
     </div>

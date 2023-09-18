@@ -13,6 +13,7 @@ export default function Discuss() {
 
     const [cookies] = useCookies(['CurrentUser', 'token', 'AuthToken']);
     // const [ cookies, setCookie, removeCookie] = useCookies(null)
+    const curr_user = cookies.CurrentUser;
 
 
     const handleClick = ()=>{
@@ -33,8 +34,23 @@ export default function Discuss() {
             const resp = await axios.post('http://localhost:5000/discuss',{
                 title , content , curr_user
             })
-            if(resp.status === 201) alert('post made successfully!')
-            if(resp.status === 401) alert('could not post')
+            if(resp.data.status === 201) {
+              alert('post made successfully......')
+            }
+            if(resp.data.status === 401) alert('could not post')
+        }catch(e){
+            console.log(e)
+        }
+    }
+    
+    const handleClickPosts = async (e)=>{
+        e.preventDefault();
+        try{
+            const resp = await axios.post('http://localhost:5000/my-post' , { curr_user})
+            const Combined = resp.data.Combined
+            
+            console.log(Combined)
+
         }catch(e){
             console.log(e)
         }
@@ -46,7 +62,6 @@ export default function Discuss() {
             setUserPosts(resp.data.userTitle)
             setuserTimestamps(resp.data.timestamp)
 
-            // console.log('fetched data :' + resp.data.userPosts)
             
         }catch(e){
             setResp(['none'])
@@ -65,6 +80,12 @@ export default function Discuss() {
         <h1>{Resp}</h1>
         
 <button className="toggle" onClick={handleClick}>+NEW CONTENT</button>
+
+<Link to={`/my-posts`}>
+<button className="toggle">MyPosts</button>
+</Link>
+                           
+
     <form action='POST' class={`form-discuss-show-${show}`}>
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" onChange={(e)=>{
@@ -80,6 +101,7 @@ export default function Discuss() {
         <button class="close" onClick={closeForm}>CLOSE</button>
 
     </form>
+    
 
     <div className="show-posts-discuss-container">
         {UserPosts.map((item , index)=>{
@@ -92,11 +114,7 @@ export default function Discuss() {
             <p><Link to={`/discuss-content?discuss=${item}`}>{item}</Link></p>
             <p className='timestamp'>CREATED AT: &nbsp;{userTimestamps[index]}</p>
 
-            {/* <div className="buttons-container-discussion">
-                    <button className="upvote-button">Upvote</button>
-                    <button className="view-button">View</button>
-                </div> */}
-
+        
           </div>
                 
             )

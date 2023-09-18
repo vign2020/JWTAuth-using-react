@@ -17,6 +17,8 @@ import Func from './components/Func';
 import DiscussContent from './components/DiscussContent'; 
 import Profile from './components/Profile'
 import Disucss from './components/Discuss'
+import Myposts from './components/Myposts';
+
 export default function App() {
 
   const location = useLocation();
@@ -43,6 +45,7 @@ export default function App() {
                 <Route path="/discuss" element={<Disucss discuss={discuss}/>} />
                 <Route path="/discuss-content" element={<DiscussContent discuss={discuss} />} />
                 <Route path = "/profile" element={<Profile /> }/>
+                <Route path='/my-posts' element={<Myposts />}/>
             </Route>
             <Route path = "/" element={<Landing />} exact/>
             <Route element={<Register/>} path="/register" />
@@ -50,6 +53,7 @@ export default function App() {
             <Route element={<Trial />} path ="/trial" />
             <Route element={<Logout/>} path="/logout" />
             <Route path='/searching' element={<Func /> } />
+            
 
             
           </Routes>
