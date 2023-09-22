@@ -8,7 +8,7 @@ export default function Landing() {
     <div className="Landing">
   
   <header className="hero">
-    <h1>Welcome to Our Code-Crunch</h1>
+    <h1>Welcome to Code-Crunch</h1>
     <p>Sharpen your coding skills and become a better developer.</p>
 
     <div className="button-container">

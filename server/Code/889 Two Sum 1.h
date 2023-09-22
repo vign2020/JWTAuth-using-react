@@ -17,6 +17,6 @@ vector<int> solve(vector<int> &nums, int target)
             }
         }
     }
-    ans.push_back(1234);
+ 
     return ans;
 }
