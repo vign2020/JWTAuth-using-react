@@ -18,6 +18,9 @@ import DiscussContent from './components/DiscussContent';
 import Profile from './components/Profile'
 import Disucss from './components/Discuss'
 import Myposts from './components/Myposts';
+import Contests from './components/Contests'
+import ContestsShow from './components/ContestsShow';
+import ContestProblems from './components/ContestProblems';
 
 export default function App() {
 
@@ -27,6 +30,8 @@ export default function App() {
   const tag = queryParams.get('tag');
   const problem_name = queryParams.get('problem_name')
   const discuss = queryParams.get('discuss');
+  const contestId = queryParams.get('contestId');
+  const problemname = queryParams.get('problem')
  
   
   // console.log(` tag is ${tag}`)
@@ -46,6 +51,9 @@ export default function App() {
                 <Route path="/discuss-content" element={<DiscussContent discuss={discuss} />} />
                 <Route path = "/profile" element={<Profile /> }/>
                 <Route path='/my-posts' element={<Myposts />}/>
+                <Route path='/contests' element={<Contests/>} />
+                <Route path='/contests/:dynamic' element={<ContestsShow contestId = {contestId}/>} />
+                <Route path='/ContestProblemName' element = {<ContestProblems name = {problemname} />} />
             </Route>
             <Route path = "/" element={<Landing />} exact/>
             <Route element={<Register/>} path="/register" />
@@ -53,9 +61,7 @@ export default function App() {
             <Route element={<Trial />} path ="/trial" />
             <Route element={<Logout/>} path="/logout" />
             <Route path='/searching' element={<Func /> } />
-            
 
-            
           </Routes>
       
     </div>

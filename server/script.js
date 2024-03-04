@@ -8,7 +8,8 @@ const cors = require("cors")
 const Cookies = require('js-cookie')
 const jwt=require("jsonwebtoken")
 const multer = require('multer')
-
+const redisConnection = require('./redis-connection') 
+const {Queue} = require("bullmq")
 //************************CODE EDITOR LIBRARIES***************
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -18,10 +19,13 @@ const uniqueId = uuidv4();
 const path = require("path");
 const { stderr, stdout } = require("process");
 
+
+
 const app = express();
 const User = require('./User'); 
 const Post = require('./Posts')
 
+const { Contest, Problem, Submission, ContestUser } = require('./Contestdb');
 
 
 
@@ -44,7 +48,6 @@ app.use(session({
 app.use(cookieParser());
 app.use(cors());
 app.use(bodyParser.json());
-
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
@@ -206,22 +209,31 @@ app.post('/register', async (req, res) => {
     // CODE TO CREATE DIRECTORY 
   const directoryName = 'Code';
   const uniqueId = uuidv4();// Replace this with the actual method to generate a unique ID
-  const fileName = `${prob_name}`;
+  // prob_name = prob_name.replace(/\s+/g, '')
+  let fileName = `${prob_name}`;
+
  
-      if (code === undefined) return res.status(400).json({ msg: 'No code' });
+      // if (code === undefined) return res.status(400).json({ msg: 'No code' });
+      // if (code === undefined) return undefined
+
       if (!fs.existsSync(directoryName)) fs.mkdirSync(directoryName);
 
       const filePath = `${directoryName}/${fileName}`
+      // console.log(filePath)
       await fs.writeFileSync(filePath, code);
 
       return filePath
     }
+// create_file_dir('sdfsdf' , '889          Two Sum 1.cpp' );
 
   const execute_code = async (filePath) => {
+    console.log('FILE PATH IS I.....???????' + filePath)
     const fileName = path.basename(filePath, path.extname(filePath));
+    console.log(`fileName is ${fileName}`)
 
 
       const cppFileName = `Code\\${fileName}.cpp`;
+      console.log(cppFileName)
     
       const compilePromise = new Promise((resolve, reject) => {
         exec(`g++ ${cppFileName} -o Code\\output_binary2`, (compileError, compileStdout, compileStderr) => {
@@ -245,7 +257,7 @@ app.post('/register', async (req, res) => {
             
             // return runError;
           }
-          console.log('Execution output:', runStdout);
+          // console.log('Execution output:', runStdout);
           resolve(runStdout);
         });
       });
@@ -257,49 +269,40 @@ app.post('/register', async (req, res) => {
     let global_actual_code;
 
     app.post("/code", async (req, res) => {
-      const { code , call  , create} = req.body;
-      console.log('call is'+ call+ 'and create is' + create);
+        const {code , call , codemain , callmain} = await req.body;
+        
+
+        // console.log(`call is ${call} and codemain is ${codemain} and callmain is ${callmain}`)
+      
+       const filePath = await create_file_dir(code , call)
+       const filePath2 = await create_file_dir(codemain , callmain)
+       
+      //  console.log(`${filePath} and ${filePath2}`)
+      if(!filePath) res.sendStatus(401)
+
+      console.log('file path2 is....???????::::' + filePath2)
+
+      const start =Date.now()
+      let op;
+      let status;
+
       try{
-        //THE FILE PATH 
-        // console.log('global actual code' + global_actual_code)
-        const filePath = await create_file_dir(code , create);
-
-        const directoryPath = __dirname;
-        const file_path_exec = path.join(directoryPath, `Code/${call}`);
-        // const filePathActualCode = await create_file_dir(global_actual_code);
-
-        console.log('filepath' + filePath)
-        // console.log('globalo8utou' + global_actual_code)
-    
-        //CODE TO EXECUTE THE FILE
-        const start=Date.now()
-        const output = await execute_code(file_path_exec)
-
-        const end = Date.now()
-        // console.log('output is'+ output)
-       
-       var global_testcase_output = '';
-      //  console.log('fookin...undef'+ global_testcase)
-
-        global_testcase[0].output.map((item , index)=>{
-          global_testcase_output+=item;
-          global_testcase_output+=" ";
-        })
-        console.log('array op' + global_testcase_output)
-        console.log('code op'+output)
-        
-        var result;
-        global_testcase_output === output ? result = 'correct answer' : result = 'wrong answer'
-       
-        res.json({op:output , executionTime: end-start , input: global_testcase[0].array , expected :  global_testcase_output, result: result, success:true});
-
-      }catch (error) {
-        console.error('Error is is:', error);
-        // console.log('ERROR IS THIS ' + error)
-        let error2 = error.toString();
-        res.json({ op: error2 , executionTime:0.000 , success:false });
+         op = await execute_code(filePath2)
+         status = true
+      }catch(e){
+        op = e.message;
+        status = 'fail'
       }
-        
+       
+        const executionTime =  Date.now() - start;
+      //  ans.then((result) => console.log(result))
+
+      //  console
+      //  console.log(filePath)
+      // execute_code(filePath);
+      console.log(op)
+      res.json({op : op  , executionTime  : executionTime , status : status })
+
       });
 
 
@@ -309,10 +312,13 @@ app.post('/register', async (req, res) => {
 
         // console.log('actual code is' + code)
         // console.log('test case' + testcase)
+        if(testcase){
+          testcase.map((item ,index)=>{
+            global_testcase.push(item)
+          })
+        }
 
-        testcase.map((item ,index)=>{
-          global_testcase.push(item)
-        })
+   
         global_actual_code = code;
         // console.log(code)
         res.json({status : 200})
@@ -372,7 +378,7 @@ app.post('/register', async (req, res) => {
         user.posts.push(newPost);
         await user.save();
 
-        res.json({ status: 201 , timestamp:newPost.timestamp});
+        res.json({ message: 201 , timestamp:newPost.timestamp});
 
     
         }catch(e){
@@ -381,6 +387,7 @@ app.post('/register', async (req, res) => {
         }
 
         });
+
 app.post('/discuss-content' , async(req, res)=>{
   const postData = req.body.getContent;
   console.log(postData)
@@ -503,6 +510,178 @@ app.post('/profile', upload.single('file'), async (req, res) => {
 
 });
 
+
+//contest routes
+//just for returning the available contests based on time and date
+app.get("/contest" , async (req , res)=>{
+  const currentDateTime = new Date();
+
+    const contest = await Contest.findOne({ 
+      startTime: { $lte: currentDateTime },
+      endTime: { $gte: currentDateTime }
+    })
+
+    res.json({contest : contest.title , id : contest._id})       
+})
+
+//for inserting participants
+app.post("/contest_insert_user" , async (req , res) =>{
+  const curr_user = req.body.curr_user;
+  const contestId = req.body.contestId;
+  console.log(curr_user)
+
+  //find the id of curr_user from user schema
+  const curr_user_id = await User.findOne({name : curr_user})
+  const existingParticipant = await Contest.findOne({_id : contestId , participants : curr_user_id})
+
+  console.log(existingParticipant)
+  // Find the contest by ID
+  const contest = await Contest.findById(contestId);
+  if (contest) {
+    if (!existingParticipant) {
+      console.log('Inserting a user.');
+      console.log(`Contest ID is ${contestId}`);
+    
+      try {
+        const updatedContest = await Contest.findByIdAndUpdate(
+          contestId,
+          { $push: { participants: curr_user_id } },
+          { new: true }
+        );
+
+
+      } catch (error) {
+        console.error('Error adding participant to contest:', error);
+      }
+      res.json({message : 'Registered Successfully....'})
+    }
+
+   else {
+      console.log('Participant already exists in the contest');
+      res.json({ message : 'Participant already exists in the contest' })
+    }
+  } else {
+    console.log('No contest found.');
+    res.json({ message : 'No contest found.'});
+  }
+
+  // res.json({status : 200});
+})
+
+//returning the list of problems based on the contest
+app.post("/contests_show", async (req, res) => {
+  try {
+    const contestId = req.body.contestId;
+    const contest = await Contest.findById(contestId).populate('problems');
+
+    console.log(contestId)
+
+    // Access the problems array with the populated documents
+    const problems = contest.problems;
+    // console.log(problems)
+    // console.log(`${problems[0].title} and ${problems.description}`);
+
+    res.json({problems : problems}); // Assuming you want to send the problems as a response
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//get the problem description , testcases based on the name
+app.post("/contest_problem_info" , async (req , res)=>{
+  const title = req.body.problem_name
+  const problemInfo = await Problem.findOne({ title : title })
+
+  // console.log(problemInfo.title);
+
+  res.json({description : problemInfo.description , testcases : problemInfo.testCases})
+  
+})
+
+//create a file in the /code directory..NOTE... the execution will not take place here but..it will be done using queues 
+
+const producerFunc = async ()=>{
+
+  const notificationQueue = new Queue('submission-queue', {
+    connection: redisConnection
+});
+ 
+  try{
+    const submissionsWithOutput = await Submission.find({ result: { $exists: false } }).limit(3);
+    // console.log('THE PRODUCER PART IS ' + submissionsWithOutput)
+
+    for (const submission of submissionsWithOutput) {
+      const res = await notificationQueue.add("submission", submission, { removeOnComplete: true, removeOnFail: true });
+      console.log(`Job added to queue - Job ID: ${res.id}`);
+      
+  }
+  // await notificationQueue.obliterate();
+}
+catch(e){
+    console.log('error is :' + e)
+}
+  
+}
+
+app.post("/contest_problem_code" , async (req , res) =>{
+  let { code , problem_name , curr_user } = req.body
+  problem_name_for_directory = `${problem_name}.h`
+  if(!code) res.json({status : 401});
+else{
+  const filePath = await create_file_dir(code , problem_name_for_directory);
+
+  console.log( problem_name , curr_user)
+
+  // const nameId = await ContestUser.findOne({username : curr_user})
+  const nameId = await User.findOne({name : curr_user})
+  const problemId = await Problem.findOne({title : problem_name})
+
+  // console.log(nameId , problemId)
+
+  const newSubmission = new Submission({
+    user : nameId,
+    problem : problemId,
+    code : filePath 
+
+  })
+  await Submission.insertMany(newSubmission)
+  const submissionId = await newSubmission._id;
+
+  console.log(`file path da.da.. ${filePath}`)
+
+  producerFunc();
+
+  // console.log(code)
+  // console.log(req.body.code)
+  res.json({submissionId : submissionId})
+}
+})
+
+//long polling to give back the reuslt
+
+
+app.post("/get_output", async (req, res) => {
+  try {
+    const curr_user_submission = req.body.submission_id;
+    const submission = await Submission.findById(curr_user_submission);
+
+    if (submission && submission.result !== undefined) {
+      console.log('Output from API is ' + submission.result);
+      res.json({ output: submission.result });
+    } else {
+      console.log('Result field does not exist in the collection.');
+      res.status(404).json({ error: 'Result not found' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
   app.listen(5000, () => {
-    console.log('Server started on port 5000.');
+    console.log('Server started on port 5000');
   });

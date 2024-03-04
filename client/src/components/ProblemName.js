@@ -21,62 +21,77 @@ export default function ProblemName(props) {
     const [executionTime , setexecutionTime]=useState(null);
     const [success , setsuccess]=useState(undefined);
     const [Go , setGo]=useState(null);
-    const [testcase , setTestcase] = useState([]);
+    // const [testcase , setTestcase] = useState([]);
     const [actualCode , setactualCode] = useState('');
     const [expected , setExpected] = useState(undefined);
-    const [result , setResult] = useState(undefined);
+    const [verdict , setVerdict] = useState(undefined);
     const [call , setCall] = useState(undefined);
     const [create , setCreate]= useState(undefined);
     const [input , setInput] = useState(undefined);
+
+    const [codemain , setCodemain] = useState(undefined)
+    const [callmain , setCallmain] = useState(undefined);
    
 
     const problem_name = props.problem_name;
 
+    useEffect(()=>{
 
-    const handleSubmit=async (e)=>{
+      const selectedItem = problem_tags.find((item) => item.name === problem_name);
+
+      if (selectedItem) {
+        setCall(selectedItem.call);
+        setCallmain(selectedItem.callmain);
+        setCodemain(selectedItem.codemain);
+      }
+
+    },[problem_name])
+
+     
+
+    
+  
+const handleSubmit=async (e)=>{
+  // await ProblemFunc();
+  
         e.preventDefault();
         setGo(true)
         setsuccess('processing')
-        setResult(undefined)
- 
-      console.log(testcase)
-     
+        setVerdict(undefined)
+        
+       
+
         try{
-    
-          const result = await axios.post('http://localhost:5000/code',{
-            code , call , create
-          })
+          
           // setAnswer(result.response.data)
-          setAnswer(result.data.op)
+          // setAnswer(result.data.op)
+          // setexecutionTime(result.data.executionTime)
+          // setsuccess(result.data.success)
+          // setExpected(result.data.expected)
+          // console.log(`the states are ::: ${call} and ${codemain} and ${callmain}`);
+          const result = await axios.post('http://localhost:5000/code' , {code , call , callmain , codemain})
+
+          // console.log(`${result.data.op}` )
+          setsuccess(result.data.status);
+           setAnswer(result.data.op)
+           setVerdict(result.data.op)
+
+          console.log(verdict)
           setexecutionTime(result.data.executionTime)
-          setsuccess(result.data.success)
-          setExpected(result.data.expected)
-          setResult(result.data.result)
-          setInput(result.data.input)
+
+          
+
+
+          // setResult(result.data.result)
+          // setInput(result.data.input)
         }
         catch(e){
-          console.log(e.response.data)
+          console.error(e)
         }
+        
     }
 
-    const TestCase = async(e)=>{
-      // console.log('problem name is' + problem_tags[0].testcase[1].array);
-      const problem_name = problem_tags.filter((item , index) =>{
-        return item.name === props.problem_name
-      })
-      setTestcase(problem_name[0].testcase);
-      setactualCode(problem_name[0].code);
-      setCall(problem_name[0].call);
-      setCreate(problem_name[0].create);
 
-      console.log(actualCode)
-
-      const resp = axios.post('http://localhost:5000/code-testcase',{ testcase , actualCode })
-
-    }
-    useEffect(()=>{
-      TestCase();
-    },[testcase])
   return (
     <div className='ProblemName-container'>
 
@@ -96,21 +111,7 @@ export default function ProblemName(props) {
               })
           }
 
-<div className="testcase-container">
-{testcase.map((testcase, index) => (
-        <div key={index} className="example">
-          <h3>Example {index + 1}:</h3>
-          <p>
-        <strong>Input:</strong> nums = [{testcase.array.join(', ')}]
-        {testcase.target ? <span> target = {testcase.target}</span> : ''}
-      </p>
-          {/* <p><strong>Output:</strong> [{testcase.output.join(', ')}]</p> */}
-          {testcase.explanation && (
-            <p><strong>Explanation:</strong> {testcase.explanation}</p>
-          )}
-        </div>
-      ))}
-      </div>
+
           </div>
 
       
@@ -120,26 +121,7 @@ export default function ProblemName(props) {
       <div className="CodeEditor-container">
         <h1>Code Editor</h1>
         <form action="POST" className="form-container">
-          {/* <textarea
-            rows="20"
-            cols="75"
-            value={code}
-            className="textarea"
-            onChange={(e) => {
-              setCode(e.target.value);
-            }}
-          ></textarea><br /> */}
-          {/* <Editor
-      value={code}
-      padding={20}
-      onValueChange={(code) => setCode(code)}
-      highlight={(code) => highlight(code, languages.js)}
-      style={{
-        fontFamily: "monospace",
-        fontSize: 17,
-        border: "1px solid black"
-      }}
-    /> */}
+         
      
       <Editor 
         height ="70vh"
@@ -162,9 +144,10 @@ export default function ProblemName(props) {
           <h1 className={`code-header ${success === true ? 'code-header-success' : (success === 'processing' ? 'code-header-processing' : 'code-header-fail')}`}>
             {success === true ? 'Compilation Success' : (success === 'processing' ? 'Processing...' : 'Compilation Fail')}
            
-          </h1>
-          <h1 className={`code-header ${result === 'correct answer' ? 'code-header-success' :  'code-header-fail'}`}>
-            {result === 'correct answer' ? 'Correct answer' : (result === undefined ? '' : 'Wrong answer')}
+          </h1>  
+          <h1 className={`${verdict === "correct" ? 'code-header-success' :  'code-header-fail'}`}>
+            {/* { verdict === "correct" ? 'Correct answer' : (verdict === undefined ? '' : 'Wrong answer') } */}
+            {verdict}
            
           </h1>
           {executionTime && (
