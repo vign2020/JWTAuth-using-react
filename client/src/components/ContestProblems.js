@@ -12,6 +12,7 @@ export default function ContestProblems(props) {
     const [testcase , setTestcase] = useState(undefined);
     const [submissionId , setSubmissionId] = useState(undefined)
     const [codeoutput , setOutput]= useState(undefined); 
+    const [codeoutputExpected , setcodeoutputExpected]= useState(undefined);
     // const [processing , setProcessing] = useState(false);
 
     const [cookies] = useCookies(['CurrentUser']);
@@ -63,6 +64,7 @@ export default function ContestProblems(props) {
           if (response.status === 200) {
             console.log(response.data.output);
             setOutput(response.data.output);
+            setcodeoutputExpected(response.data.expected)
             clearInterval(intervalId)
           } else {
             // Handle other valid responses if needed
@@ -139,7 +141,8 @@ export default function ContestProblems(props) {
              </button>
            </form>
 
-           <h1>OUTPUT : {codeoutput}</h1>
+           <h1 className='codeEditor'><code>{codeoutput}</code></h1>
+           
 
     </div>
   )

@@ -601,3 +601,18 @@ button[type="submit"],
   margin:0px 30px;
   font-size: larger;
 }
+
+.codeEditor{
+  background-color: #ececec;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}
+code{
+  font-family: 'Courier New', monospace;
+  color: rgba(11, 11, 190, 0.787);
+  padding: 5px;
+  display: inline-block;
+  background-color: #eee;
+  border-radius: 3px;
+}

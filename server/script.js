@@ -626,11 +626,39 @@ catch(e){
 }
 
 app.post("/contest_problem_code" , async (req , res) =>{
+  const { v4: uuidv4 } = require('uuid');
+  const ids = uuidv4();
+
+
   let { code , problem_name , curr_user } = req.body
-  problem_name_for_directory = `${problem_name}.h`
+  problem_name_for_directory = `${problem_name}-${ids}.cpp`
+  console.log('--> '+ problem_name_for_directory)
   if(!code) res.json({status : 401});
+
 else{
   const filePath = await create_file_dir(code , problem_name_for_directory);
+
+ 
+  //add the mainfunction 
+  let content;
+  try{
+  const problem = await Problem.findOne({title : problem_name})
+  content = problem.mainFunc;
+  console.log('main func is ...--->' + content);
+  }catch(e){
+    console.log('the error in getting mainfunc is sof '+ e)
+  }
+
+
+  fs.appendFile(`Code\\${problem_name_for_directory}`, content , (err) => {
+    if (err) {
+      console.error(`Error appending to the file: ${err.message}`);
+    } else {
+      console.log('Data appended to the file successfully.');
+    }
+  });
+  //add this to the submission collection for it to be accessed by the worker
+
 
   console.log( problem_name , curr_user)
 
@@ -643,8 +671,8 @@ else{
   const newSubmission = new Submission({
     user : nameId,
     problem : problemId,
-    code : filePath 
-
+    code : filePath,
+    // ExecuteCode : `Code\\${problem_name_for_directory}`
   })
   await Submission.insertMany(newSubmission)
   const submissionId = await newSubmission._id;
