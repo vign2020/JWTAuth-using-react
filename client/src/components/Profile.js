@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useCookies } from 'react-cookie';
-
+import ErrorPage from './ErrorPage';
 import github from '../uploads/WhatsApp Image 2022-04-02 at 7.43.28 PM.jpeg';
 
 
@@ -19,6 +19,7 @@ export default function Profile() {
     const [ranking , setRanking] = useState(null);
     const [contest , setContest] = useState(null);
     const [about , setAbout]=useState(null);
+    const [status , setStatus] = useState(undefined);
     
     const curr_user = cookie.CurrentUser;
     const encodedCurrUser = encodeURIComponent(curr_user);
@@ -28,8 +29,11 @@ export default function Profile() {
     const get_profile_page= async ()=>{
       try{
         const resp = await axios.get(`http://localhost:5000/profile?curr_user=${encodedCurrUser}`);
-        console.log('image name ist'+resp.data.image)
-        console.log('contest is ' + resp.data.contest)
+        
+        // console.log('image name ist'+resp.data.image)
+        // console.log('contest is ' + resp.data.contest)
+        // setStatus(resp.resp)
+        console.log('status is '+ resp.data.response + " and ttl is --> "+ resp.data.ttl)
 
         setContest(resp.data.contest);
         setRanking(resp.data.ranking);
@@ -37,7 +41,11 @@ export default function Profile() {
         setImage(resp.data.image);
 
       }catch(e){
+
+   
+        // console.log(resp.status);
         console.log(e);
+        setStatus(503)
       }
       
       
@@ -81,6 +89,8 @@ export default function Profile() {
       
 
   return (
+    <>
+    { status === 503 ? <ErrorPage message = "oops!! too many requests.. try again later :("/> : 
     <div className="parent">
       <div className="parent-sub-1">
       <div className="profile-container-1">
@@ -120,5 +130,7 @@ export default function Profile() {
       </div>
   
   </div>
+ } 
+  </>
   )
 }

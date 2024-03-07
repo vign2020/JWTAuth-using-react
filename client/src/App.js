@@ -21,7 +21,7 @@ import Myposts from './components/Myposts';
 import Contests from './components/Contests'
 import ContestsShow from './components/ContestsShow';
 import ContestProblems from './components/ContestProblems';
-
+import DockerNode from './components/DockerNode'
 export default function App() {
 
   const location = useLocation();
@@ -54,6 +54,7 @@ export default function App() {
                 <Route path='/contests' element={<Contests/>} />
                 <Route path='/contests/:dynamic' element={<ContestsShow contestId = {contestId}/>} />
                 <Route path='/ContestProblemName' element = {<ContestProblems name = {problemname} />} />
+               
             </Route>
             <Route path = "/" element={<Landing />} exact/>
             <Route element={<Register/>} path="/register" />
@@ -61,6 +62,7 @@ export default function App() {
             <Route element={<Trial />} path ="/trial" />
             <Route element={<Logout/>} path="/logout" />
             <Route path='/searching' element={<Func /> } />
+            <Route path='/dockernode' element ={<DockerNode />} />
 
           </Routes>
       

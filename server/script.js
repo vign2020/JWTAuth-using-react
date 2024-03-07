@@ -10,6 +10,12 @@ const jwt=require("jsonwebtoken")
 const multer = require('multer')
 const redisConnection = require('./redis-connection') 
 const {Queue} = require("bullmq")
+// const limitter = require('express-rate-limit')
+const rateLimiter = require('./rate-limiter')
+
+
+
+
 //************************CODE EDITOR LIBRARIES***************
 const { exec } = require('child_process');
 const fs = require('fs');
@@ -27,6 +33,11 @@ const Post = require('./Posts')
 
 const { Contest, Problem, Submission, ContestUser } = require('./Contestdb');
 
+//rate limiting middleware
+// app.use(limitter({
+//   windowMs : 5000,
+//   max : 5
+// }))
 
 
 mongoose.connect('mongodb://localhost/CodeCrunch', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -50,6 +61,16 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(rateLimiter({ secondsWindow: 60, allowedHits: 10 }));
+
+
+function callsome (req){
+  const commonFields = {
+    callsInAMinute: req.requests,
+    ttl: req.ttl,
+  };
+  return commonFields ;
+}
 
 
 
@@ -464,20 +485,30 @@ const upload = multer({ storage });
 
 app.get('/profile', async (req,res)=>{
   const curr_user = req.query.curr_user;
-  console.log('user is'+curr_user)
+  // console.log('user is'+curr_user)
 
   try{
     const user= await User.findOne({name : curr_user})
-    console.log(' user stats is ' + user.stats)
+    // console.log(' user stats is ' + user.stats)
     const contest = user.stats[0].contests;
     const ranking = user.stats[0].Ranking;
     const solved = user.stats[0].solved;
-    console.log('contest is '+ contest)
+    // console.log('contest is '+ contest)
 
-    if(!user.image) res.json({image : 'noimage.png'});
+
+    //if user has not uploaded an image.
+    if(!user.image) {
+      console.log('inside fi')
+      res.json({image : 'noimage.png'});
+    }
     else{
       //fetch the image-name from db
-      res.json({image : user.image , contest : contest , ranking : ranking , solved : solved})
+      console.log('inside ielse ')
+      console.log('ttl is ' + req.ttl + 'and calls is ' + req.requests);
+      const commonFields = callsome(req);
+      res.json({image : user.image , contest : contest , ranking : ranking , solved : solved , ...commonFields})
+      // callsInAMinute : req.requests , ttl : req.ttl
+
     }
   }catch(e){
     console.log(e);
